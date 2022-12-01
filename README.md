@@ -38,7 +38,7 @@ To show first 20 lines of fastq file
 cat SRR********.fastq | head -n 20
 ```
 
-##Quality control of fastq files
+## Quality control of fastq files
 Install fastqc using apt-get, update apt database with apt-get using the following command.
 ```
 sudo apt-get update
