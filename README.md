@@ -47,3 +47,40 @@ Install fastqc
 ```
 sudo apt-get -y install fastqc
 ```
+Run fastqc on fastq files. Move all fastq files for qc into one folder, eg to folder named "fastqc"
+```
+cd fastqc
+fastqc *.fastq
+```
+For differential expressed gene analysis, trimming of low quality sequences and adapter is not necessary.
+
+## Generating genome indices
+Download STAR
+```
+wget https://github.com/alexdobin/STAR/archive/2.7.10b.tar.gz
+tar -xzf 2.7.10b.tar.gz
+cd STAR-2.7.10b
+sudo apt install rna-star
+STAR --version
+```
+To download human genome, go to Ensemble Human, click "Download DNA sequence (FASTA)". Right click copy link for "homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz"
+At the terminal, type
+```wget https://ftp.ensembl.org/pub/release-108/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz
+```
+Download the annotation gtf file, return to Ensemble Human homepage, click "Download GTF or GFF3". Right click copy link for "homo_sapiens.GRCh38.108.gtf.gz"
+At the terminal, type
+``` wget https://ftp.ensembl.org/pub/release-108/gtf/homo_sapiens/Homo_sapiens.GRCh38.108.gtf.gz
+```
+Unzip both Human Reference genome and gtf file.
+
+In STAR-2.7.10b folder, make a new directory named "ref" to house the genome indice file. Ensure that gtf and reference genome file are in STAR folder (not within any folder in STAR)
+```
+STAR –runMode genomeGenerate –genomeDir ref/ --genomeFastaFiles Homo_sapies.GRCh38.dna_sm.primary_assembly.fa –sjdbGTFfile Homo_sapiens.GRCh38.108.gtf –runThreadN 32
+```
+
+Create a new folder named 'fastq' in STAR, place all fastq files in 'fastq' folder. Create a 'mapped' folder in STAR.
+```
+cd fastq
+For file in *.fq;do STAR --runMode alignReads --genomeDir ../ref/ --outSAMtype BAM SortedByCoordinate --readFilesIn ${file} --runThreadN 12 --outFileNamePrefix ../mapped/${file};done
+```
+
