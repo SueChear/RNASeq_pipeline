@@ -84,3 +84,18 @@ cd fastq
 For file in *.fq;do STAR --runMode alignReads --genomeDir ../ref/ --outSAMtype BAM SortedByCoordinate --readFilesIn ${file} --runThreadN 12 --outFileNamePrefix ../mapped/${file};done
 ```
 
+Create a directory for bam file named 'bams' in 'mapped' folder and move bam files to 'bams'
+```
+mkdir bams
+cd bams
+mv *.bam bams/
+```
+Install subread, use featureCounts to count reads
+```
+sudo apt-get update
+sudo apt-get -y install subread
+
+featureCounts -a Homo_sapiens.GRCh38.108.gtf -o count.out -T 8 mapped/bams/*.bam
+```
+Open count.out contents in spreadsheet, remove first row, keep 'geneid' and 'sample' columns, save as countfile.csv
+
