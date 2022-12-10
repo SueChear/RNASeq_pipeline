@@ -138,11 +138,6 @@ The standard differential expression analysis steps are wrapped into a single fu
 ```
 dds<-DESeq(dds)
 ```
-Save dds results in an object called 'res'
-```
-res<-results(dds)
-res
-```
 
 The variance stablizing transformation VST function calculates a VST from the fitted dispersion-mean relation and then transforms the count data, yielding a matrix of values which are now approximately hommoskedastic (having constant variance along the range of mean values).
 ```
