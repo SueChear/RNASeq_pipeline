@@ -65,11 +65,13 @@ STAR --version
 ```
 To download human genome, go to Ensemble Human, click "Download DNA sequence (FASTA)". Right click copy link for "homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz"
 At the terminal, type
-```wget https://ftp.ensembl.org/pub/release-108/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz
+```
+wget https://ftp.ensembl.org/pub/release-108/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz
 ```
 Download the annotation gtf file, return to Ensemble Human homepage, click "Download GTF or GFF3". Right click copy link for "homo_sapiens.GRCh38.108.gtf.gz"
 At the terminal, type
-``` wget https://ftp.ensembl.org/pub/release-108/gtf/homo_sapiens/Homo_sapiens.GRCh38.108.gtf.gz
+``` 
+wget https://ftp.ensembl.org/pub/release-108/gtf/homo_sapiens/Homo_sapiens.GRCh38.108.gtf.gz
 ```
 Unzip both Human Reference genome and gtf file.
 
