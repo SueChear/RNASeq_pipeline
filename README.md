@@ -174,7 +174,7 @@ Filter adjusted p value<0.05
 sigs<-sigs[sigs$padj<0.05,]
 ```
 
-##Convert ENSEMBL ID to symbol 
+## Convert ENSEMBL ID to symbol 
 Install human database from bioconductor
 ```
 if (!requireNamespace("BiocManager", quietly=TRUE))
@@ -196,7 +196,7 @@ Use columns to discover which sorts of annotations can be extracted from it
 columns(org.Hs.eg.db)
 ```
 
-##Heatmap
+## Heatmap
 Install ComplexHeatmap
 ```
 BiocManager::install("ComplexHeatmap")
@@ -227,7 +227,7 @@ Heatmap(mat.z,cluster_rows=T, cluster_columns=T, column_labels=colnames(mat.z),
 
 <img width="948" alt="heatmap" src="https://user-images.githubusercontent.com/117556524/206892917-dd746a85-7f05-49fe-bb08-02f5ac21d198.PNG">
 
-##Gene set enrichment analysis with ClusterProfiler
+## Gene set enrichment analysis with ClusterProfiler
 Install ClusterProfiler
 ```
 BiocManager::install("clusterProfiler")
@@ -246,11 +246,13 @@ GO_results <- enrichGO(gene = genes_to_test, OrgDb = "org.Hs.eg.db", keyType = "
 as.data.frame(GO_results)
 ```
 <img width="413" alt="GOtable" src="https://user-images.githubusercontent.com/117556524/206893108-263cae40-9179-4af6-a4df-4d90ff297bd0.PNG">
+
 ```
 plot(barplot(GO_results, showCategory = 15))
 ```
 <img width="949" alt="GOplot" src="https://user-images.githubusercontent.com/117556524/206893149-9354a7ee-94dd-4d5f-aef4-b3f43f5687e2.PNG">
-##Volcano plot
+
+## Volcano plot
 Install EnhancedVolcano and other packages
 ```
 BiocManager::install('EnhancedVolcano')
@@ -279,32 +281,33 @@ selected=c("COL18A1","HOXB9")
 EnhancedVolcano(sigs.df, x="log2FoldChange", y="padj", lab=sigs.df$symbol, pCutoff=1e-4, FCcutoff=1, selectLab=selected)
 ```
 <img width="950" alt="volcanolabel" src="https://user-images.githubusercontent.com/117556524/206893192-9860c611-424f-4461-bba7-4d687cdc4080.PNG">
-##GSEA analysis
+
+## GSEA analysis
+
 Load required packages.
 ```
 library(fgsea)
 library(magrittr)
 library(tidyverse)
 ```
-
+```
 res_fg2<-sig.df%>%dplyr::select(symbol,stat)%>%na.omit()%>%distinct()%>%
          group_by(symbol)%>%summarize(stat=mean(stat))
 
-
+```
 Deframe converts two column data frames to a named vector or list using the first column as name and the second column as value
 ```
 ranks<-deframe(res_fg2)
 head(ranks,20)
 ```
 The gmtpathways() function will take a gmt file you downloaded from MSigDB and turn it into a list. Each element in the list is a character vector of genes in 
-the pathway
-Load the pathways into a named list
+the pathway. Load the pathways into a named list.
 ```
 pathways.hallmark<-gmtPathways("h.all.v2022.1.Hs.symbols.gmt")
 pathways.hallmark
 ```
 
-#show the first few pathways, and within those, show only the first few genes
+Show the first few pathways, and within those, show only the first few genes
 ```
 pathways.hallmark%>% head() %>% lapply(head)
 ```
@@ -324,7 +327,8 @@ fgseaResTidy %>% dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>%
 ```
 
 <img width="956" alt="gseatable" src="https://user-images.githubusercontent.com/117556524/206893208-741cc725-753e-4051-902f-b32cade69d23.PNG">
-Plot the normalized enrichment scores. Color the bar indicating wheteher or not the pathway was significant:
+Plot the normalized enrichment scores. Color the bar indicating wheteher or not the pathway was significant.
+
 ```
 ggplot(fgseaResTidy, aes(reorder(pathway,NES),NES))+ 
   geom_col(aes(fill=padj<0.05))+coord_flip()+
@@ -332,19 +336,23 @@ ggplot(fgseaResTidy, aes(reorder(pathway,NES),NES))+
        title="Hallmark pathways NES from GSEA")+
   theme_minimal()
 ```
+
 <img width="948" alt="hallmarkplot" src="https://user-images.githubusercontent.com/117556524/206893230-41d73776-23fa-4701-9a91-2fdd1c24ab03.PNG">
-Show enrichment plot for selected pathway
+Show enrichment plot for selected pathway.
+
 ```
 plotEnrichment(pathway=pathways.hallmark[["HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION"]], ranks)
 ```
 
-
 <img width="957" alt="gseaplot" src="https://user-images.githubusercontent.com/117556524/206893295-4cfe326c-6999-4a8a-afa8-8f171a0e31a6.PNG">
-PlotGseaTable allows us to plot a summary figure showing multiple pathways
+
+PlotGseaTable allows us to plot a summary figure showing multiple pathways.
+
 ```
 plotGseaTable(pathways.hallmark[fgseaRes$pathway[fgseaRes$padj<0.05]],ranks,
               fgseaRes, gseaParam = 0.5)
 ```
+
 <img width="752" alt="gseasummary" src="https://user-images.githubusercontent.com/117556524/206893308-9229a340-63c9-4d48-8354-5f9c90b889d9.PNG">
 
 
