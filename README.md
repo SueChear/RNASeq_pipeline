@@ -1,4 +1,4 @@
-# RNA-Seq data analysis pipeline tutorial with an example of repurposing data from a Batten cerebral organoid study
+# RNA-Seq data analysis pipeline tutorial with an example of reprocessing data from a Batten cerebral organoid study
 
 GEO datasets are downloaded using SRA toolkit. To download SRA toolkit, follow instructions at https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit. Download tar file for Ubuntu from NCBI.
 ```
