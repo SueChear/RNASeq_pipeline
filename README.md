@@ -293,7 +293,9 @@ sigs.df$symbol<-mapIds(org.Hs.eg.db, keys=rownames(sigs.df), keytype="ENSEMBL",c
 EnhancedVolcano(sigs.df, x="log2FoldChange", y="padj", lab=sigs.df$symbol, pCutoff=1e-4, FCcutoff=1)
 ```
 <img width="948" alt="volcano" src="https://user-images.githubusercontent.com/117556524/206893171-a6f3feba-9b6f-40a3-bd03-a41a527ab833.PNG">
+
 To label a few selected genes only
+
 ```
 selected=c("COL18A1","HOXB9")
 EnhancedVolcano(sigs.df, x="log2FoldChange", y="padj", lab=sigs.df$symbol, pCutoff=1e-4, FCcutoff=1, selectLab=selected)
