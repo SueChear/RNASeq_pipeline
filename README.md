@@ -161,7 +161,7 @@ maximum likelihood estimation of the dispersion. We expect the dispersion to dec
 ```
 plotDispEsts(dds)
 ```
-
+<img width="941" alt="dispersionestimates" src="https://user-images.githubusercontent.com/117556524/206892888-a1f1a272-0058-40f4-8249-b4e97f86b51d.PNG">
 ```
 res<-results(dds, contrast=c("condition","S","C"))
 ```
@@ -224,7 +224,7 @@ Heatmap(mat.z,cluster_rows=T, cluster_columns=T, column_labels=colnames(mat.z),
         name="Z-score", row_labels=sigs.df[rownames(mat.z),]$symbol, 
         row_names_gp =gpar(fontsize=5, fontfamily="sans", fontface="bold"))
 ```
-
+<img width="948" alt="heatmap" src="https://user-images.githubusercontent.com/117556524/206892917-dd746a85-7f05-49fe-bb08-02f5ac21d198.PNG">
 ##Gene set enrichment analysis with ClusterProfiler
 Install ClusterProfiler
 ```
