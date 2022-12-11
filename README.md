@@ -232,19 +232,19 @@ Heatmap(mat.z,cluster_rows=T, cluster_columns=T, column_labels=colnames(mat.z),
 
 <img width="948" alt="heatmap" src="https://user-images.githubusercontent.com/117556524/206892917-dd746a85-7f05-49fe-bb08-02f5ac21d198.PNG">
 
-## Gene ontology analysis with ClusterProfiler
+## Gene ontology enrichment with ClusterProfiler
 Install ClusterProfiler
 ```
 BiocManager::install("clusterProfiler")
 
 library(clusterProfiler)
 ```
-Retrieve just the gene ID ENSG (rownames)... for log2FC>1
+Retrieve just the gene ID ENSG (rownames) for log2FC>1 
 ```
 genes_to_test <- rownames(sigs[sigs$log2FoldChange >1,])
 
 ```
-Retrieve gene ontology terms
+Retrieve gene ontology terms associated with upregulated genes in 'mutant' samples
 ```
 GO_results <- enrichGO(gene = genes_to_test, OrgDb = "org.Hs.eg.db", keyType = "ENSEMBL", ont = "BP")
 
@@ -256,6 +256,19 @@ as.data.frame(GO_results)
 plot(barplot(GO_results, showCategory = 15))
 ```
 <img width="949" alt="GOplot" src="https://user-images.githubusercontent.com/117556524/206893149-9354a7ee-94dd-4d5f-aef4-b3f43f5687e2.PNG">
+
+Retrieve gene ontology terms associated with downregulated genes in 'mutant' samples
+```
+genes_to_test <- rownames(sigs[sigs$log2FoldChange < -1,])
+
+GO_results <- enrichGO(gene = genes_to_test, OrgDb = "org.Hs.eg.db", keyType = "ENSEMBL", ont = "BP")
+
+as.data.frame(GO_results)
+
+plot(barplot(GO_results, showCategory = 15))
+```
+<img width="949" alt="GOplotdown" src="https://user-images.githubusercontent.com/117556524/206900258-3acf90b3-15ba-4702-b831-f8a8f8d7e2d2.PNG">
+
 
 ## Volcano plot
 Install EnhancedVolcano and other packages
