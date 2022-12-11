@@ -101,7 +101,7 @@ featureCounts -a Homo_sapiens.GRCh38.108.gtf -o count.out -T 8 mapped/bams/*.bam
 ```
 Open count.out contents in spreadsheet, remove first row, keep 'geneid' and 'sample' columns, save as 'count.csv'
 
-##Differential expression
+## Differential expression
 All following code should be run in R.
 
 Install the required packages:
@@ -124,7 +124,7 @@ Filter counts >50
 ```
 counts<-counts[which(rowSums(counts)>50),]
 ```
-Create column called 'condition' which consists of either 'control' or 'mutant'
+Create column called 'condition' which consists of either 'C' for 'control' or 'S' for 'mutant'
 ```
 condition<-factor(c("C","C","C","C","C","C","S","S","S","S","S","S"))
 
@@ -164,6 +164,9 @@ maximum likelihood estimation of the dispersion. We expect the dispersion to dec
 plotDispEsts(dds)
 ```
 <img width="941" alt="dispersionestimates" src="https://user-images.githubusercontent.com/117556524/206892888-a1f1a272-0058-40f4-8249-b4e97f86b51d.PNG">
+
+
+Contrast() to compare between group 'C' and 'S'
 ```
 res<-results(dds, contrast=c("condition","S","C"))
 ```
@@ -188,7 +191,7 @@ BiocManager::install("org.Hs.eg.db")
 library("AnnotationDbi")
 library("org.Hs.eg.db")
 ```
-
+Convert sigs.df into data frame
 ```
 sigs.df<-as.data.frame(sigs)
 ```
@@ -229,7 +232,7 @@ Heatmap(mat.z,cluster_rows=T, cluster_columns=T, column_labels=colnames(mat.z),
 
 <img width="948" alt="heatmap" src="https://user-images.githubusercontent.com/117556524/206892917-dd746a85-7f05-49fe-bb08-02f5ac21d198.PNG">
 
-## Gene set enrichment analysis with ClusterProfiler
+## Gene ontology analysis with ClusterProfiler
 Install ClusterProfiler
 ```
 BiocManager::install("clusterProfiler")
