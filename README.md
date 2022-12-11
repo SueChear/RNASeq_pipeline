@@ -153,6 +153,8 @@ Plot principal component analysis
 ```
 plotPCA(vsdata,intgroup="condition")
 ```
+<img width="639" alt="pcaplot" src="https://user-images.githubusercontent.com/117556524/206892635-2b65adf1-981c-4d47-9398-eec2ef986c98.PNG">
+
 Plot the per-gene dispersion estimates together with the fitted mean-dispersion relationship. The curve is displayed as a red line in the figure below, which plots the estimate for the expected dispersion value for genes of a given expression strenght. Each black dot is a gene with an associated mean expression level and
 maximum likelihood estimation of the dispersion. We expect the dispersion to decrease as the mean of normalized counts increases.
 
