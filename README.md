@@ -210,7 +210,7 @@ sigs.df<-sigs.df[(sigs.df$baseMean>150) & (abs(sigs.df$log2FoldChange)>2.5),]
 keytypes same as columns, keys are values under each keytype. By simply using appropriate argument values with select we can specify what 
 keys we want to look up values for (keys), what we want returned back (columns) and the type of keys that we are passing in (keytype), keytype has similar values 
 between two datasets, in this case it is "ENSEMBL" where keys are similar to rownames of sigs.df
-
+```
 sigs.df$symbol<-mapIds(org.Hs.eg.db, keys=rownames(sigs.df), keytype = "ENSEMBL",column="SYMBOL")
 
 
@@ -224,7 +224,9 @@ Heatmap(mat.z,cluster_rows=T, cluster_columns=T, column_labels=colnames(mat.z),
         name="Z-score", row_labels=sigs.df[rownames(mat.z),]$symbol, 
         row_names_gp =gpar(fontsize=5, fontfamily="sans", fontface="bold"))
 ```
+
 <img width="948" alt="heatmap" src="https://user-images.githubusercontent.com/117556524/206892917-dd746a85-7f05-49fe-bb08-02f5ac21d198.PNG">
+
 ##Gene set enrichment analysis with ClusterProfiler
 Install ClusterProfiler
 ```
@@ -242,9 +244,12 @@ Retrieve gene ontology terms
 GO_results <- enrichGO(gene = genes_to_test, OrgDb = "org.Hs.eg.db", keyType = "ENSEMBL", ont = "BP")
 
 as.data.frame(GO_results)
-
+```
+<img width="413" alt="GOtable" src="https://user-images.githubusercontent.com/117556524/206893108-263cae40-9179-4af6-a4df-4d90ff297bd0.PNG">
+```
 plot(barplot(GO_results, showCategory = 15))
 ```
+<img width="949" alt="GOplot" src="https://user-images.githubusercontent.com/117556524/206893149-9354a7ee-94dd-4d5f-aef4-b3f43f5687e2.PNG">
 ##Volcano plot
 Install EnhancedVolcano and other packages
 ```
@@ -267,11 +272,13 @@ sigs.df$symbol<-mapIds(org.Hs.eg.db, keys=rownames(sigs.df), keytype="ENSEMBL",c
 
 EnhancedVolcano(sigs.df, x="log2FoldChange", y="padj", lab=sigs.df$symbol, pCutoff=1e-4, FCcutoff=1)
 ```
+<img width="948" alt="volcano" src="https://user-images.githubusercontent.com/117556524/206893171-a6f3feba-9b6f-40a3-bd03-a41a527ab833.PNG">
 To label a few selected genes only
 ```
 selected=c("COL18A1","HOXB9")
 EnhancedVolcano(sigs.df, x="log2FoldChange", y="padj", lab=sigs.df$symbol, pCutoff=1e-4, FCcutoff=1, selectLab=selected)
 ```
+<img width="950" alt="volcanolabel" src="https://user-images.githubusercontent.com/117556524/206893192-9860c611-424f-4461-bba7-4d687cdc4080.PNG">
 ##GSEA analysis
 Load required packages.
 ```
@@ -315,6 +322,8 @@ Show results in a table
 fgseaResTidy %>% dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>%
   arrange(padj)%>%DT::datatable()
 ```
+
+<img width="956" alt="gseatable" src="https://user-images.githubusercontent.com/117556524/206893208-741cc725-753e-4051-902f-b32cade69d23.PNG">
 Plot the normalized enrichment scores. Color the bar indicating wheteher or not the pathway was significant:
 ```
 ggplot(fgseaResTidy, aes(reorder(pathway,NES),NES))+ 
@@ -323,17 +332,20 @@ ggplot(fgseaResTidy, aes(reorder(pathway,NES),NES))+
        title="Hallmark pathways NES from GSEA")+
   theme_minimal()
 ```
-
+<img width="948" alt="hallmarkplot" src="https://user-images.githubusercontent.com/117556524/206893230-41d73776-23fa-4701-9a91-2fdd1c24ab03.PNG">
 Show enrichment plot for selected pathway
 ```
 plotEnrichment(pathway=pathways.hallmark[["HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION"]], ranks)
 ```
 
+
+<img width="957" alt="gseaplot" src="https://user-images.githubusercontent.com/117556524/206893295-4cfe326c-6999-4a8a-afa8-8f171a0e31a6.PNG">
 PlotGseaTable allows us to plot a summary figure showing multiple pathways
 ```
 plotGseaTable(pathways.hallmark[fgseaRes$pathway[fgseaRes$padj<0.05]],ranks,
               fgseaRes, gseaParam = 0.5)
 ```
+<img width="752" alt="gseasummary" src="https://user-images.githubusercontent.com/117556524/206893308-9229a340-63c9-4d48-8354-5f9c90b889d9.PNG">
 
 
 
