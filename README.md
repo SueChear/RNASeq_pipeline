@@ -207,7 +207,7 @@ Filter basemean>150 and log2fold change>2.5
 sigs.df<-sigs.df[(sigs.df$baseMean>150) & (abs(sigs.df$log2FoldChange)>2.5),]
 ```
 
-keytypes same as columns, keys are values under each keytype. By simply using appropriate argument values with select we can specify what 
+keytypes are same as columns, keys are values under each keytype. By simply using appropriate argument values with select we can specify what 
 keys we want to look up values for (keys), what we want returned back (columns) and the type of keys that we are passing in (keytype), keytype has similar values 
 between two datasets, in this case it is "ENSEMBL" where keys are similar to rownames of sigs.df
 ```
@@ -234,9 +234,9 @@ BiocManager::install("clusterProfiler")
 
 library(clusterProfiler)
 ```
-Retrieve just the gene ID ENSG (rownames)... for log2FC>2.5
+Retrieve just the gene ID ENSG (rownames)... for log2FC>1
 ```
-genes_to_test <- rownames(sigs[sigs$log2FoldChange > 2.5,])
+genes_to_test <- rownames(sigs[sigs$log2FoldChange >1,])
 
 ```
 Retrieve gene ontology terms
@@ -282,7 +282,8 @@ EnhancedVolcano(sigs.df, x="log2FoldChange", y="padj", lab=sigs.df$symbol, pCuto
 ```
 <img width="950" alt="volcanolabel" src="https://user-images.githubusercontent.com/117556524/206893192-9860c611-424f-4461-bba7-4d687cdc4080.PNG">
 
-## GSEA analysis
+## GSEA analysis 
+(https://stephenturner.github.io/deseq-to-fgsea/))
 
 Load required packages.
 ```
@@ -290,12 +291,14 @@ library(fgsea)
 library(magrittr)
 library(tidyverse)
 ```
+
+Retrieve gene symbol and test statistic which are what we're intrested in.
 ```
 res_fg2<-sig.df%>%dplyr::select(symbol,stat)%>%na.omit()%>%distinct()%>%
          group_by(symbol)%>%summarize(stat=mean(stat))
 
 ```
-Deframe converts two column data frames to a named vector or list using the first column as name and the second column as value
+The fgsea function requires a list of gene sets to check and a named vector of gene-level statistics, where the names should be the same as the gene names in the pa thway list. First let's create our named vector of test statistics. Deframe converts two column data frames to a named vector or list using the first column as name and the second column as value.
 ```
 ranks<-deframe(res_fg2)
 head(ranks,20)
