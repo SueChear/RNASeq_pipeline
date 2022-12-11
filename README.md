@@ -128,18 +128,24 @@ condition<-factor(c("C","C","C","C","C","C","S","S","S","S","S","S"))
 
 coldata<-data.frame(row.names=colnames(counts),condition)
 ```
-The design, as shown below indicates how to model the samples, if we want to measure the effect of the condition, then
-design=~condition where condition consists of columns in coldata.
+A design formula tells the statistical software the known sources of variation to control for, as well as the factor of interest to tets for during differential expression testing. For example, if you know that batch is a significant source of variation in your data, then batch should be included in your model. The design formula should have all of the factors in your metadata that account for major sources of variation in your data. The last factor entered in the formula should be the condition of interest. For example, here we want to examine the expression differences between the groups, control and sample, then your deisng formula would be design=~condition. The tilde ~ should always proceed your factors and tells DESeq2 to model the counts using the formula. Note the factors included in the design formula need to match the column names in the metadata. If there is another column 'batch' as source of variation, then model formula will be design<-~batch+condition. (https://hbctraining.github.io/DGE_workshop/lessons/04_DGE_DESeq2_analysis.html) The object class used by DESeq2 package to store the read counts and the intermediate estimated quantities during statistical analysis is the DESeqDataSet, which will usually be represented in the code here as an object dds.
 
 ```
 dds<-DESeqDataSetFromMatrix(countData = counts,colData = coldata,design=~condition)
 ```
-The standard differential expression analysis steps are wrapped into a single functionm, DESeq.
+Use relevel to specify the reference group:
+```
+dds$condition<-relevel(dds$condition, ref="C")
+```
+
+The standard differential expression analysis steps are wrapped into a single functionm, DESeq. This workflow includes estimating size factors, estimating gene-wise dispersion, fitting curve to gene-wise dispersion estimates, shrinking gene-wise dispersion estimates and glm fit for each gene.
+DESeq2 calculates the size factors for each sample using the median of ratios method to normalize the count data. Dispersion is a measure of spread or variability in the data. DESeq2 uses a specific measure of dispersion related to the mean and variance of the data. The DESeq2 dispersion estimates are inversely related to the mean and directly related to variance. Based on this relationship, the dispersion is higher for small mean counts and lower for large mean counts. The dispersion estimates for genes with the same mean will differ only based on their variance. Therefore, the dispersion estimates reflect the variance in gene expression for a given mean value.
+
 ```
 dds<-DESeq(dds)
 ```
 
-The variance stablizing transformation VST function calculates a VST from the fitted dispersion-mean relation and then transforms the count data, yielding a matrix of values which are now approximately hommoskedastic (having constant variance along the range of mean values).
+The variance stablizing transformation VST function calculates a VST from the fitted dispersion-mean relation and then transforms the count data, yielding a matrix of values which are now approximately homoskedastic (having constant variance along the range of mean values).
 ```
 vsdata<-vst(dds,blind=F)
 ```
@@ -147,16 +153,22 @@ Plot principal component analysis
 ```
 plotPCA(vsdata,intgroup="condition")
 ```
-Plot dispersion estimates
+Plot the per-gene dispersion estimates together with the fitted mean-dispersion relationship. The curve is displayed as a red line in the figure below, which plots the estimate for the expected dispersion value for genes of a given expression strenght. Each black dot is a gene with an associated mean expression level and
+maximum likelihood estimation of the dispersion. We expect the dispersion to decrease as the mean of normalized counts increases.
+
 ```
 plotDispEsts(dds)
 ```
 
 ```
 res<-results(dds, contrast=c("condition","S","C"))
-
+```
+Omit NA from data
+```
 sigs<-na.omit(res)
-
+```
+Filter adjusted p value<0.05
+```
 sigs<-sigs[sigs$padj<0.05,]
 ```
 
@@ -182,22 +194,21 @@ Use columns to discover which sorts of annotations can be extracted from it
 columns(org.Hs.eg.db)
 ```
 
-keytypes same as columns, keys are values under each keytype. By simply using appropriate argument values with select we can specify what 
-keys we want to look up values for (keys), what we want returned back (columns) and the type of keys that we are passing in (keytype), keytype has similar values 
-between two datasets, in this case it is "ENSEMBL" where keys are similar to rownames of sigs.df
-
-```
-keytypes(org.Hs.eg.db)
-sigs.df$symbol<-mapIds(org.Hs.eg.db, keys=rownames(sigs.df), keytype="ENSEMBL", column="SYMBOL")
-```
 ##Heatmap
 Install ComplexHeatmap
 ```
 BiocManager::install("ComplexHeatmap")
+library(ComplexHeatmap)
 ```
-Filter basemean and log2fold change
+Filter basemean>150 and log2fold change>2.5
 ```
 sigs.df<-sigs.df[(sigs.df$baseMean>150) & (abs(sigs.df$log2FoldChange)>2.5),]
+```
+
+keytypes same as columns, keys are values under each keytype. By simply using appropriate argument values with select we can specify what 
+keys we want to look up values for (keys), what we want returned back (columns) and the type of keys that we are passing in (keytype), keytype has similar values 
+between two datasets, in this case it is "ENSEMBL" where keys are similar to rownames of sigs.df
+
 sigs.df$symbol<-mapIds(org.Hs.eg.db, keys=rownames(sigs.df), keytype = "ENSEMBL",column="SYMBOL")
 
 
@@ -205,26 +216,23 @@ mat<-counts(dds, normalized=T)[rownames(sigs.df),]
 
 mat.z<-t(apply(mat,1,scale))
 
-coldata
-
 colnames(mat.z)<-rownames(coldata)
-mat.z
-
 
 Heatmap(mat.z,cluster_rows=T, cluster_columns=T, column_labels=colnames(mat.z), 
-        name="Z-score", row_labels=sigs.df[rownames(mat.z),]$symbol)
+        name="Z-score", row_labels=sigs.df[rownames(mat.z),]$symbol, 
+        row_names_gp =gpar(fontsize=5, fontfamily="sans", fontface="bold"))
 ```
 
-##ClusterProfiler
+##Gene set enrichment analysis with ClusterProfiler
 Install ClusterProfiler
 ```
 BiocManager::install("clusterProfiler")
 
 library(clusterProfiler)
 ```
-Retrieve just the gene ID ENSG (rownames)... for log2FC>0.5
+Retrieve just the gene ID ENSG (rownames)... for log2FC>2.5
 ```
-genes_to_test <- rownames(sigs[sigs$log2FoldChange > 0.5,])
+genes_to_test <- rownames(sigs[sigs$log2FoldChange > 2.5,])
 
 ```
 Retrieve gene ontology terms
@@ -243,9 +251,18 @@ BiocManager::install('EnhancedVolcano')
 install.packages("textshaping")
 
 install.packages("ggrepel")
+library(EnhancedVolcano)
+
 ```
-Using pcutoff=1e-4
+
+Using pcutoff=1e-4 and Fold change cutoff=1
+
 ```
+sigs<-na.omit(res)
+sigs<-sigs[sigs$padj<0.05,]
+sigs.df<-as.data.frame(sigs)
+sigs.df$symbol<-mapIds(org.Hs.eg.db, keys=rownames(sigs.df), keytype="ENSEMBL",column="SYMBOL")
+
 EnhancedVolcano(sigs.df, x="log2FoldChange", y="padj", lab=sigs.df$symbol, pCutoff=1e-4, FCcutoff=1)
 ```
 To label a few selected genes only
@@ -254,25 +271,66 @@ selected=c("COL18A1","HOXB9")
 EnhancedVolcano(sigs.df, x="log2FoldChange", y="padj", lab=sigs.df$symbol, pCutoff=1e-4, FCcutoff=1, selectLab=selected)
 ```
 ##GSEA analysis
+Load required packages.
 ```
-res<-na.omit(res)
-res<-res[res$baseMean>50,]
+library(fgsea)
+library(magrittr)
+library(tidyverse)
+```
 
-res1<-res[order(-res$stat),]
-res1
+res_fg2<-sig.df%>%dplyr::select(symbol,stat)%>%na.omit()%>%distinct()%>%
+         group_by(symbol)%>%summarize(stat=mean(stat))
 
-gene_list<-res1$stat
-gene_list
-names(gene_list)<-rownames(res1)
-gene_list
 
-gse<-gseGO(gene_list, ont="BP", keyType = "ENSEMBL", 
-           OrgDb = "org.Hs.eg.db", eps=1e-300)
+Deframe converts two column data frames to a named vector or list using the first column as name and the second column as value
+```
+ranks<-deframe(res_fg2)
+head(ranks,20)
+```
+The gmtpathways() function will take a gmt file you downloaded from MSigDB and turn it into a list. Each element in the list is a character vector of genes in 
+the pathway
+Load the pathways into a named list
+```
+pathways.hallmark<-gmtPathways("h.all.v2022.1.Hs.symbols.gmt")
+pathways.hallmark
+```
 
-as.data.frame(gse)
+#show the first few pathways, and within those, show only the first few genes
+```
+pathways.hallmark%>% head() %>% lapply(head)
+```
 
-gseaplot(gse, geneSetID = 50)
+Now run the fgsea algorithm with 1000 permutations
+```
+fgseaRes<-fgsea(pathways=pathways.hallmark, stats=ranks, nperm=1000)
+```
+Tidy the results
+```
+fgseaResTidy<-fgseaRes%>%as_tibble() %>%arrange(desc(NES))
+```
+Show results in a table
+```
+fgseaResTidy %>% dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>%
+  arrange(padj)%>%DT::datatable()
+```
+Plot the normalized enrichment scores. Color the bar indicating wheteher or not the pathway was significant:
+```
+ggplot(fgseaResTidy, aes(reorder(pathway,NES),NES))+ 
+  geom_col(aes(fill=padj<0.05))+coord_flip()+
+  labs(x="Pathway", y="Normalized Enrichment Score",
+       title="Hallmark pathways NES from GSEA")+
+  theme_minimal()
+```
 
+Show enrichment plot for selected pathway
+```
+plotEnrichment(pathway=pathways.hallmark[["HALLMARK_EPITHELIAL_MESENCHYMAL_TRANSITION"]], ranks)
+```
+
+PlotGseaTable allows us to plot a summary figure showing multiple pathways
+```
+plotGseaTable(pathways.hallmark[fgseaRes$pathway[fgseaRes$padj<0.05]],ranks,
+              fgseaRes, gseaParam = 0.5)
 ```
 
 
