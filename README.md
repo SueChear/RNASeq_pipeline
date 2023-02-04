@@ -1,4 +1,5 @@
-# RNA-Seq data analysis pipeline  with an example of reprocessing data from a Batten cerebral organoid study
+# RNA-Seq data analysis pipeline: Reprocessing data from a Batten cerebral organoid study
+Gomez-Giro, G., Arias-Fuenzalida, J., Jarazo, J. et al. Synapse alterations precede neuronal damage and storage pathology in a human cerebral organoid model of CLN3-juvenile neuronal ceroid lipofuscinosis. acta neuropathol commun 7, 222 (2019). [https://doi.org/10.1186/s40478-019-0871-7](https://doi.org/10.1186/s40478-019-0871-7)
 
 GEO datasets are downloaded using SRA toolkit. To download SRA toolkit, follow instructions at https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit. Download tar file for Ubuntu from NCBI.
 ```
