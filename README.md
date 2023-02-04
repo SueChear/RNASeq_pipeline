@@ -103,7 +103,7 @@ featureCounts -a Homo_sapiens.GRCh38.108.gtf -o count.out -T 8 mapped/bams/*.bam
 Open count.out contents in spreadsheet, remove first row, keep 'geneid' and 'sample' columns, save as 'count.csv'
 
 ## Differential expression
-Run all of the following code in R.
+Run all of the following codes in R.
 
 Install the required packages:
 ```
