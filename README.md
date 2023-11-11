@@ -78,13 +78,20 @@ Unzip both Human Reference genome and gtf file.
 
 In STAR-2.7.10b folder, make a new directory named "ref" to house the genome indice file. Ensure that gtf and reference genome file are in STAR folder (not within any folder in STAR)
 ```
-STAR –runMode genomeGenerate –genomeDir ref/ --genomeFastaFiles Homo_sapies.GRCh38.dna_sm.primary_assembly.fa –sjdbGTFfile Homo_sapiens.GRCh38.108.gtf –runThreadN 32
+STAR –runMode genomeGenerate –genomeDir ref/ --genomeFastaFiles Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa –sjdbGTFfile Homo_sapiens.GRCh38.108.gtf –runThreadN 32
 ```
 
 Create a new folder named 'fastq' in STAR, place all fastq files in 'fastq' folder. Create a 'mapped' folder in STAR.
 ```
 cd fastq
 For file in *.fq;do STAR --runMode alignReads --genomeDir ../ref/ --outSAMtype BAM SortedByCoordinate --readFilesIn ${file} --runThreadN 12 --outFileNamePrefix ../mapped/${file};done
+```
+
+Examine the percentage of mapped reads.
+
+```
+cd mapped
+cat SRR10116296.fastqLog.final.out
 ```
 
 Create a directory for bam file named 'bams' in 'mapped' folder and move bam files to 'bams'
