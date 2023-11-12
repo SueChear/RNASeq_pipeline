@@ -87,6 +87,13 @@ cd fastq
 For file in *.fq;do STAR --runMode alignReads --genomeDir ../ref/ --outSAMtype BAM SortedByCoordinate --readFilesIn ${file} --runThreadN 12 --outFileNamePrefix ../mapped/${file};done
 ```
 
+For MacOS
+
+```
+cd fastq
+For file in *.fq;do STAR --runMode alignReads --genomeDir ../ref/ --outSAMtype BAM Unsorted --readFilesIn ${file} --runThreadN 12 --outFileNamePrefix ../mapped/${file};done
+```
+
 Examine the percentage of mapped reads.
 
 ```
@@ -106,6 +113,14 @@ sudo apt-get update
 sudo apt-get -y install subread
 
 featureCounts -a Homo_sapiens.GRCh38.108.gtf -o count.out -T 8 mapped/bams/*.bam
+```
+
+For MacOS
+
+cd to subread folder>bin
+
+```
+./featureCounts -a Homo_sapiens.GRCh38.108.gtf -o count.out -T 8 bams/*.bam
 ```
 Open count.out contents in spreadsheet, remove first row, keep 'geneid' and 'sample' columns, save as 'count.csv'
 
