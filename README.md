@@ -55,6 +55,13 @@ fastqc *.fastq
 ```
 For differential expressed gene analysis, trimming of low quality sequences and adapter is not necessary.
 
+To run multiqc, cd to directory with fastqc outputs.
+
+```
+multiqc *fastqc*
+
+```
+
 ## Generating genome indices
 Download STAR
 ```
