@@ -114,6 +114,15 @@ mkdir bams
 cd bams
 mv *.bam bams/
 ```
+
+To check mapping, use samtools to sort and index.(for macOS, the mapped sequence is not sorted)
+```
+samtools sort usorted.bam > sorted.bam
+samtools index sorted.bam
+```
+Then to view mapped file, go to https://igv.org/app/, load the hg38 ref sequence, followed by the sorted.bam and sorted.bam.bai (index file). Zoom in and out of 
+the tracks to view the mapping.
+
 Install subread, use featureCounts to count reads
 ```
 sudo apt-get update
