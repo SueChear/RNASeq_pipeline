@@ -141,6 +141,11 @@ cd to subread folder>bin
 ```
 Open count.out contents in spreadsheet, remove first row, keep 'geneid' and 'sample' columns, save as 'count.csv'
 
+Use multiqc to examine featureCounts summary
+```
+multiqc count.out.summary
+```
+
 ## Differential expression
 Run all of the following codes in R.
 
