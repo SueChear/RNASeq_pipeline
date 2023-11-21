@@ -132,6 +132,7 @@ featureCounts -a Homo_sapiens.GRCh38.108.gtf -o count.out -T 8 mapped/bams/*.bam
 ```
 
 For MacOS
+featureCounts will sort bam files if there were unsorted.
 
 cd to subread folder>bin
 
